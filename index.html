@@ -72,10 +72,39 @@
     </main>
 
     <script>
-        lucide.createIcons();
-        // Le script pour appeler ton API IA directement viendra ici
-    </script>
-</body>
+    lucide.createIcons();
+
+    const generateBtn = document.getElementById('generateBtn');
+    const appPrompt = document.getElementById('appPrompt');
+
+    generateBtn.addEventListener('click', async () => {
+        const promptValue = appPrompt.value;
+        if (!promptValue) return alert("Décris ton app d'abord !");
+
+        // 1. État de chargement
+        generateBtn.innerText = "IA en réflexion...";
+        generateBtn.disabled = true;
+        generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        try {
+            console.log("Prompt envoyé :", promptValue);
+            
+            // 2. Simulation de génération (On connectera le Worker Cloudflare ici)
+            setTimeout(() => {
+                alert("Connexion IA établie ! Prêt pour la phase de génération réelle.");
+                
+                // Reset du bouton
+                generateBtn.innerText = "Générer l'Application";
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }, 1500);
+
+        } catch (error) {
+            alert("Erreur de connexion à l'IA");
+            generateBtn.disabled = false;
+        }
+    });
+</script>
     <script>
     lucide.createIcons();
 
