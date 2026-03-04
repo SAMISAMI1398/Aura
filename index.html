@@ -76,4 +76,35 @@
         // Le script pour appeler ton API IA directement viendra ici
     </script>
 </body>
+    <script>
+    lucide.createIcons();
+
+    const generateBtn = document.getElementById('generateBtn');
+    const appPrompt = document.getElementById('appPrompt');
+
+    generateBtn.addEventListener('click', async () => {
+        const promptValue = appPrompt.value;
+        if (!promptValue) return alert("Décris ton app d'abord !");
+
+        generateBtn.innerText = "IA en réflexion...";
+        generateBtn.disabled = true;
+
+        try {
+            // Ici, on appellera ton Worker Cloudflare (ou ton script GitHub Action) 
+            // qui contient ta clé API secrète.
+            console.log("Envoi du prompt :", promptValue);
+            
+            // Simulation du succès pour l'instant
+            setTimeout(() => {
+                alert("Code généré et prêt à être envoyé sur GitHub !");
+                generateBtn.innerText = "Générer l'Application";
+                generateBtn.disabled = false;
+            }, 2000);
+
+        } catch (error) {
+            console.error(error);
+            alert("Erreur lors de la génération.");
+        }
+    });
+</script>
 </html>
