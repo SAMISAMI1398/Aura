@@ -3,111 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura V2 - Deploy Everything</title>
+    <title>Aura Pro | L'IA qui déploie vos rêves</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background: radial-gradient(circle at top right, #1e1b4b, #000000); }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gradient-text { background: linear-gradient(90deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .iphone-shadow { box-shadow: 0 0 80px rgba(96, 165, 250, 0.15); }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+    </style>
 </head>
-<body class="bg-black text-white min-h-screen font-sans">
+<body class="text-white min-h-screen flex flex-col items-center p-6 overflow-x-hidden">
 
-    <nav class="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
-        <div class="flex items-center gap-2 text-blue-500 font-bold text-2xl">Aura V2</div>
+    <nav class="w-full max-w-6xl flex justify-between items-center mb-16">
+        <div class="text-2xl font-black tracking-tighter flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center italic">A</div>
+            AURA <span class="text-zinc-500 font-light text-sm ml-2">STUDIO PRO</span>
+        </div>
+        <div class="glass px-4 py-2 rounded-full text-xs font-medium text-zinc-400">Credits: $5.00 Ready</div>
     </nav>
 
-    <main class="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
-            <h3 class="text-blue-500 font-bold mb-4 italic text-sm">Étape 1 : Décris ton rêve</h3>
-            <textarea id="appPrompt" class="w-full h-32 bg-black border border-zinc-800 rounded-xl p-4 text-sm mb-4 outline-none focus:ring-1 focus:ring-blue-500" placeholder="Ex: Une app de fitness avec un coach IA..."></textarea>
-            <button id="generateBtn" class="w-full bg-blue-600 py-3 rounded-xl font-bold hover:bg-blue-700 transition">Lancer le déploiement Aura</button>
-        </div>
-
-        <div id="marketingZone" class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 hidden space-y-4">
-            <h3 class="text-green-500 font-bold italic text-sm">Étape 2 : Fiche App Store générée</h3>
-            <div>
-                <label class="text-[10px] uppercase text-zinc-500 font-bold">Nom Commercial</label>
-                <div id="displayAppName" class="text-lg font-bold text-white"></div>
-            </div>
-            <div>
-                <label class="text-[10px] uppercase text-zinc-500 font-bold">Description Marketing</label>
-                <div id="displayDesc" class="text-xs text-zinc-400 h-40 overflow-y-auto leading-relaxed"></div>
-            </div>
-        </div>
-
-        <div id="result" class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 hidden">
-            <h3 class="text-purple-500 font-bold italic text-sm mb-4">Étape 3 : Code SwiftUI</h3>
-            <pre id="codeOutput" class="text-[10px] text-blue-300 h-64 overflow-y-auto bg-black p-4 rounded-lg"></pre>
-        </div>
-    </main>
-
-    <script>
-        const btn = document.getElementById('generateBtn');
-        btn.onclick = async () => {
-            const prompt = document.getElementById('appPrompt').value;
-            if(!prompt) return alert("Décris ton idée !");
-            
-            btn.innerText = "Aura prépare le lancement...";
-            btn.disabled = true;
-            
-            try {
-                const res = await fetch("https://little-night-eb70.iaautomation23.workers.dev", {
-                    method: "POST",
-                    body: JSON.stringify({ prompt })
-                });
-                
-                // On récupère l'objet JSON complet (app_name, description, code)
-                const data = await res.json(); 
-
-                // Affichage Marketing
-                document.getElementById('marketingZone').classList.remove('hidden');
-                document.getElementById('displayAppName').innerText = data.app_name;
-                document.getElementById('displayDesc').innerText = data.description;
-
-                // Affichage Code
-                document.getElementById('result').classList.remove('hidden');
-                document.getElementById('codeOutput').innerText = data.code;
-                
-                alert("Félicitations ! L'application '" + data.app_name + "' est prête.");
-                
-            } catch (e) {
-                alert("Erreur de déploiement Aura : " + e.message);
-            } finally {
-                btn.innerText = "Lancer le déploiement Aura";
-                btn.disabled = false;
-            }
-        };
-    </script>
-</body>
-</html><script>
-    const btn = document.getElementById('generateBtn');
-    
-    btn.onclick = async () => {
-        const prompt = document.getElementById('appPrompt').value;
-        if(!prompt) return alert("Décris ton idée !");
+    <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
-        btn.innerText = "Aura prépare le lancement...";
-        
-        try {
-            const res = await fetch("https://little-night-eb70.iaautomation23.workers.dev", {
-                method: "POST",
-                body: JSON.stringify({ prompt })
-            });
-            
-            // On récupère l'objet JSON complet généré par Aura V2
-            const data = await res.json(); 
+        <div class="lg:col-span-4 space-y-8">
+            <div class="space-y-2">
+                <h1 class="text-5xl font-bold leading-tight">Créez l'app de <br><span class="gradient-text italic">vos rêves.</span></h1>
+                <p class="text-zinc-500 text-sm">Décrivez votre idée, Aura s'occupe du design, du code et du marketing.</p>
+            </div>
 
-            // 1. Mise à jour de l'iPhone (Code SwiftUI)
-            document.getElementById('result').classList.remove('hidden');
-            document.getElementById('codeOutput').innerText = data.code;
-            
-            // 2. Mise à jour du Marketing (Si tu as ajouté les zones de texte)
-            // document.getElementById('displayAppName').innerText = data.app_name;
-            // document.getElementById('displayDesc').innerText = data.description;
-            
-            alert("Application '" + data.app_name + "' générée avec succès !");
-            
-        } catch (e) {
-            alert("Erreur Aura : " + e.message);
-        } finally {
-            btn.innerText = "Lancer le déploiement Aura";
-        }
-    };
-</script>
+            <div class="glass p-2 rounded-2xl">
+                <textarea id="appPrompt" class="w-full h-32 bg-transparent p-4 text-sm outline-none resize-none" placeholder="Ex: Une app de méditation minimaliste..."></textarea>
+                <button id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i> Générer le Prototype Pro
+                </button>
+            </div>
+
+            <div id="marketingZone" class="glass p-6 rounded-2xl hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <h4 class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">Fiche App Store</h4>
+                <div id="displayAppName" class="text-xl font-bold mb-2"></div>
+                <div id="displayDesc" class="text-xs text-zinc-400 leading-relaxed line-clamp-4 italic"></div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-4 flex justify-center items-center">
+            <div class="relative w-[280px] h-[580px] bg-[#0c0c0c] border-[10px] border-zinc-800 rounded-[50px] iphone-shadow animate-float overflow-hidden">
+                <div class="
