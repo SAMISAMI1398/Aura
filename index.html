@@ -1,52 +1,65 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Pro | L'IA qui déploie vos rêves</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body { background: radial-gradient(circle at top right, #1e1b4b, #000000); }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .gradient-text { background: linear-gradient(90deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .iphone-shadow { box-shadow: 0 0 80px rgba(96, 165, 250, 0.15); }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
-        .animate-float { animation: float 4s ease-in-out infinite; }
-    </style>
-</head>
-<body class="text-white min-h-screen flex flex-col items-center p-6 overflow-x-hidden">
+<script>
+    // On initialise les icônes Lucide
+    lucide.createIcons();
 
-    <nav class="w-full max-w-6xl flex justify-between items-center mb-16">
-        <div class="text-2xl font-black tracking-tighter flex items-center gap-2">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center italic">A</div>
-            AURA <span class="text-zinc-500 font-light text-sm ml-2">STUDIO PRO</span>
-        </div>
-        <div class="glass px-4 py-2 rounded-full text-xs font-medium text-zinc-400">Credits: $5.00 Ready</div>
-    </nav>
+    const btn = document.getElementById('generateBtn');
+    const input = document.getElementById('appPrompt');
 
-    <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        
-        <div class="lg:col-span-4 space-y-8">
-            <div class="space-y-2">
-                <h1 class="text-5xl font-bold leading-tight">Créez l'app de <br><span class="gradient-text italic">vos rêves.</span></h1>
-                <p class="text-zinc-500 text-sm">Décrivez votre idée, Aura s'occupe du design, du code et du marketing.</p>
-            </div>
+    btn.onclick = async () => {
+        const promptValue = input.value;
+        if(!promptValue) return alert("Veuillez décrire votre idée d'application.");
 
-            <div class="glass p-2 rounded-2xl">
-                <textarea id="appPrompt" class="w-full h-32 bg-transparent p-4 text-sm outline-none resize-none" placeholder="Ex: Une app de méditation minimaliste..."></textarea>
-                <button id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-900/20">
-                    <i data-lucide="sparkles" class="w-5 h-5"></i> Générer le Prototype Pro
-                </button>
-            </div>
+        // Effet visuel de chargement sur le bouton
+        btn.innerHTML = `<span class="animate-spin mr-2 text-white">◌</span> Aura analyse votre vision...`;
+        btn.disabled = true;
 
-            <div id="marketingZone" class="glass p-6 rounded-2xl hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <h4 class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-4">Fiche App Store</h4>
-                <div id="displayAppName" class="text-xl font-bold mb-2"></div>
-                <div id="displayDesc" class="text-xs text-zinc-400 leading-relaxed line-clamp-4 italic"></div>
-            </div>
-        </div>
+        try {
+            // APPEL À TON WORKER (Vérifie bien que l'URL est la bonne)
+            const response = await fetch("https://little-night-eb70.iaautomation23.workers.dev", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: promptValue })
+            });
 
-        <div class="lg:col-span-4 flex justify-center items-center">
-            <div class="relative w-[280px] h-[580px] bg-[#0c0c0c] border-[10px] border-zinc-800 rounded-[50px] iphone-shadow animate-float overflow-hidden">
-                <div class="
+            if (!response.ok) throw new Error("Erreur serveur");
+
+            const data = await response.json();
+
+            // 1. Affichage du Marketing
+            const marketingZone = document.getElementById('marketingZone');
+            if (marketingZone) {
+                marketingZone.classList.remove('hidden');
+                document.getElementById('displayAppName').innerText = data.app_name;
+                document.getElementById('displayDesc').innerText = data.description;
+            }
+
+            // 2. Affichage du Code Technique
+            const resultZone = document.getElementById('result');
+            if (resultZone) {
+                resultZone.classList.remove('hidden');
+                document.getElementById('codeOutput').innerText = data.code;
+            }
+
+            // 3. Mise à jour de l'iPhone (Placeholder)
+            const placeholder = document.getElementById('placeholderUI');
+            if (placeholder) {
+                placeholder.innerHTML = `
+                    <div class="animate-bounce mb-4 text-green-500">
+                        <i data-lucide="check-circle" class="w-12 h-12 mx-auto"></i>
+                    </div>
+                    <p class="text-white font-bold text-lg">${data.app_name}</p>
+                    <p class="text-zinc-500 text-[10px] mt-2 uppercase tracking-widest">Prototype Déployé</p>
+                `;
+            }
+
+            lucide.createIcons(); // On rafraîchit les icônes générées
+
+        } catch (error) {
+            console.error(error);
+            alert("Connexion impossible au cerveau Aura. Vérifiez votre Worker.");
+        } finally {
+            btn.innerHTML = `<i data-lucide="sparkles" class="w-5 h-5"></i> Générer le Prototype Pro`;
+            btn.disabled = false;
+        }
+    };
+</script>
