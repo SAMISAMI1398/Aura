@@ -1,4 +1,82 @@
-<script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura V2 - Deploy Everything</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-black text-white min-h-screen font-sans">
+
+    <nav class="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-950">
+        <div class="flex items-center gap-2 text-blue-500 font-bold text-2xl">Aura V2</div>
+    </nav>
+
+    <main class="p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800">
+            <h3 class="text-blue-500 font-bold mb-4 italic text-sm">Étape 1 : Décris ton rêve</h3>
+            <textarea id="appPrompt" class="w-full h-32 bg-black border border-zinc-800 rounded-xl p-4 text-sm mb-4 outline-none focus:ring-1 focus:ring-blue-500" placeholder="Ex: Une app de fitness avec un coach IA..."></textarea>
+            <button id="generateBtn" class="w-full bg-blue-600 py-3 rounded-xl font-bold hover:bg-blue-700 transition">Lancer le déploiement Aura</button>
+        </div>
+
+        <div id="marketingZone" class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 hidden space-y-4">
+            <h3 class="text-green-500 font-bold italic text-sm">Étape 2 : Fiche App Store générée</h3>
+            <div>
+                <label class="text-[10px] uppercase text-zinc-500 font-bold">Nom Commercial</label>
+                <div id="displayAppName" class="text-lg font-bold text-white"></div>
+            </div>
+            <div>
+                <label class="text-[10px] uppercase text-zinc-500 font-bold">Description Marketing</label>
+                <div id="displayDesc" class="text-xs text-zinc-400 h-40 overflow-y-auto leading-relaxed"></div>
+            </div>
+        </div>
+
+        <div id="result" class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 hidden">
+            <h3 class="text-purple-500 font-bold italic text-sm mb-4">Étape 3 : Code SwiftUI</h3>
+            <pre id="codeOutput" class="text-[10px] text-blue-300 h-64 overflow-y-auto bg-black p-4 rounded-lg"></pre>
+        </div>
+    </main>
+
+    <script>
+        const btn = document.getElementById('generateBtn');
+        btn.onclick = async () => {
+            const prompt = document.getElementById('appPrompt').value;
+            if(!prompt) return alert("Décris ton idée !");
+            
+            btn.innerText = "Aura prépare le lancement...";
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch("https://little-night-eb70.iaautomation23.workers.dev", {
+                    method: "POST",
+                    body: JSON.stringify({ prompt })
+                });
+                
+                // On récupère l'objet JSON complet (app_name, description, code)
+                const data = await res.json(); 
+
+                // Affichage Marketing
+                document.getElementById('marketingZone').classList.remove('hidden');
+                document.getElementById('displayAppName').innerText = data.app_name;
+                document.getElementById('displayDesc').innerText = data.description;
+
+                // Affichage Code
+                document.getElementById('result').classList.remove('hidden');
+                document.getElementById('codeOutput').innerText = data.code;
+                
+                alert("Félicitations ! L'application '" + data.app_name + "' est prête.");
+                
+            } catch (e) {
+                alert("Erreur de déploiement Aura : " + e.message);
+            } finally {
+                btn.innerText = "Lancer le déploiement Aura";
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html><script>
     const btn = document.getElementById('generateBtn');
     
     btn.onclick = async () => {
