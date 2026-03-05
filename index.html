@@ -3,92 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Studio Pro</title>
+    <title>Aura | Générateur d'Apps Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background: radial-gradient(circle at top right, #1e1b4b, #000000); min-height: 100vh; color: white; font-family: sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .gradient-text { background: linear-gradient(90deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        body { background: #050505; color: white; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .neon-button { background: linear-gradient(90deg, #6366f1, #a855f7); transition: 0.3s; }
+        .neon-button:hover { box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); transform: translateY(-2px); }
     </style>
 </head>
-<body class="flex flex-col items-center p-6">
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
 
-    <nav class="w-full max-w-6xl flex justify-between items-center mb-12">
-        <div class="text-2xl font-black flex items-center gap-2">AURA <span class="text-zinc-500 text-sm font-light">STUDIO PRO</span></div>
-    </nav>
+    <div class="max-w-3xl w-full text-center space-y-8">
+        <h1 class="text-6xl font-black tracking-tighter bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent italic">AURA</h1>
+        <p class="text-gray-400 text-lg">Décrivez votre idée. Recevez votre fichier .ipa.</p>
 
-    <main class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <div class="lg:col-span-4 space-y-6">
-            <h1 class="text-5xl font-bold">Créez l'app de <br><span class="gradient-text italic">vos rêves.</span></h1>
-            <div class="glass p-4 rounded-3xl">
-                <textarea id="appPrompt" class="w-full h-32 bg-transparent p-4 text-sm outline-none resize-none" placeholder="Décrivez votre vision..."></textarea>
-                <button id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-900/40 uppercase text-xs tracking-widest">
-                    Lancer la génération
-                </button>
-            </div>
-            <div id="marketingZone" class="glass p-6 rounded-3xl hidden">
-                <div id="displayAppName" class="text-xl font-bold mb-2 text-blue-400"></div>
-                <div id="displayDesc" class="text-xs text-zinc-400 italic leading-relaxed"></div>
-            </div>
+        <div class="glass p-8 rounded-3xl space-y-4">
+            <textarea id="prompt" class="w-full bg-transparent border-none text-xl focus:ring-0 placeholder-gray-600 h-32" placeholder="Ex: Une app de fitness avec un timer néon..."></textarea>
+            <button onclick="generateApp()" id="btn" class="neon-button w-full py-4 rounded-2xl font-bold text-lg">Lancer la génération</button>
         </div>
 
-        <div class="lg:col-span-4 flex justify-center">
-            <div class="relative w-[300px] h-[550px] bg-black border-[10px] border-zinc-900 rounded-[50px] overflow-hidden shadow-2xl">
-                <div id="placeholderUI" class="h-full flex flex-col items-center justify-center p-8 text-center">
-                    <p class="text-[10px] text-zinc-600 uppercase tracking-widest">Waiting for input...</p>
-                </div>
-            </div>
+        <div id="status" class="hidden glass p-6 rounded-2xl text-left animate-pulse">
+            <p id="status-text" class="text-indigo-400 font-mono text-sm">Initialisation d'Aura Core...</p>
         </div>
-
-        <div class="lg:col-span-4">
-            <div id="result" class="glass p-6 rounded-3xl hidden h-[400px] overflow-hidden">
-                <pre id="codeOutput" class="text-[9px] text-blue-300 font-mono h-full overflow-y-auto"></pre>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script>
-        // On attend que la page soit totalement chargée
-        window.onload = () => {
-            lucide.createIcons();
-            const btn = document.getElementById('generateBtn');
-            const appPrompt = document.getElementById('appPrompt');
+        async function generateApp() {
+            const prompt = document.getElementById('prompt').value;
+            const btn = document.getElementById('btn');
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('status-text');
 
-            if(btn) {
-                btn.onclick = async () => {
-                    const prompt = appPrompt.value;
-                    if(!prompt) return alert("Dites-moi quoi créer !");
+            if (!prompt) return alert("Décrivez votre application d'abord !");
 
-                    btn.innerText = "Aura réfléchit...";
-                    btn.disabled = true;
+            btn.disabled = true;
+            btn.innerText = "Construction en cours...";
+            statusDiv.classList.remove('hidden');
 
-                    try {
-                        const res = await fetch("https://little-night-eb70.iaautomation23.workers.dev", {
-                            method: "POST",
-                            body: JSON.stringify({ prompt: prompt })
-                        });
-                        
-                        const data = await res.json(); 
+            try {
+                statusText.innerText = "> Appel de l'IA Aura Architect...";
+                const response = await fetch('https://uracorev2.iaautomation23.workers.dev/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
 
-                        document.getElementById('marketingZone').classList.remove('hidden');
-                        document.getElementById('displayAppName').innerText = data.app_name;
-                        document.getElementById('displayDesc').innerText = data.description;
+                const data = await response.json();
 
-                        document.getElementById('result').classList.remove('hidden');
-                        document.getElementById('codeOutput').innerText = data.code;
-                        
-                        document.getElementById('placeholderUI').innerHTML = `<h2 class="text-white font-bold">${data.app_name}</h2><p class="text-blue-400 text-[10px] uppercase mt-2 font-bold tracking-widest">Généré avec succès</p>`;
-                        
-                    } catch (e) {
-                        alert("Erreur de connexion : " + e.message);
-                    } finally {
-                        btn.innerText = "Lancer la génération";
-                        btn.disabled = false;
-                    }
-                };
+                if (data.error) throw new Error(data.error);
+
+                statusText.innerText = `> Succès : ${data.app_name} est en cours de compilation .ipa sur GitHub !`;
+                btn.innerText = "Génération Terminée";
+                
+            } catch (err) {
+                statusText.innerText = "> Erreur : " + err.message;
+                btn.disabled = false;
+                btn.innerText = "Réessayer";
             }
-        };
+        }
     </script>
 </body>
 </html>
