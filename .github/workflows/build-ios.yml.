@@ -1,0 +1,37 @@
+name: Aura iOS Build Engine
+
+on:
+  workflow_dispatch: # Permet de lancer le build manuellement ou via ton site
+
+jobs:
+  build:
+    runs-on: macos-latest # GitHub nous prête un Mac Pro virtuel !
+    
+    steps:
+      - name: Checkout du code Aura
+        uses: actions/checkout@v4
+
+      - name: Configuration de Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+      - name: Préparation du Projet SwiftUI
+        run: |
+          # Ce script crée la structure de l'app à partir du code généré
+          mkdir -p AuraApp/AuraApp
+          # On récupère le dernier code généré par ton Worker
+          cp ContentView.swift AuraApp/AuraApp/
+          
+      - name: Build de l'Archive (.ipa)
+        run: |
+          xcodebuild -project AuraApp.xcodeproj \
+                     -scheme AuraApp \
+                     -sdk iphoneos \
+                     -configuration Release \
+                     archive -archivePath AuraApp.xcarchive
+        # Note : Pour le .ipa final, il faudra tes certificats Apple Developer
+
+      - name: Upload du Prototype
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aura-Preview-App
+          path: AuraApp.xcarchive
