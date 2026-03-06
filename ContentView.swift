@@ -3,111 +3,101 @@ import SwiftUI
 struct ContentView: View {
     @State private var timerValue: Int = 0
     @State private var isTimerRunning: Bool = false
+    @State private var activityData: [CGFloat] = [0.2, 0.4, 0.6, 0.8, 0.5, 0.7, 0.3]
+    @State private var timer: Timer? = nil
 
     var body: some View {
         ZStack {
+            // Background
             LinearGradient(gradient: Gradient(colors: [Color.black, Color.purple]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
-
+            
             VStack {
-                Spacer()
-                
-                Text("Neon Fitness Timer")
+                Text("Aura Fitness")
                     .font(.largeTitle)
-                    .foregroundColor(Color.white)
-                    .padding()
-
-                ZStack {
-                    Circle()
-                        .stroke(lineWidth: 16)
-                        .foregroundColor(Color.purple.opacity(0.5))
-                        .padding()
-                    
-                    Text("\(timerValue) sec")
-                        .font(.system(size: 48, weight: .bold))
-                        .foregroundColor(Color.white)
-                }
+                    .foregroundColor(.neonPurple)
+                    .padding(.top, 50)
                 
                 Spacer()
                 
-                HStack {
-                    Button(action: {
-                        isTimerRunning.toggle()
-                        if isTimerRunning {
-                            startTimer()
-                        }
-                    }) {
+                // Timer
+                Text("\(timerValue)")
+                    .font(.system(size: 80, weight: .bold))
+                    .foregroundColor(.neonPurple)
+                
+                HStack(spacing: 30) {
+                    Button(action: startTimer) {
                         Text(isTimerRunning ? "Pause" : "Start")
-                            .font(.title2)
-                            .foregroundColor(Color.white)
-                            .padding()
-                            .background(Capsule().fill(Color.purple))
-                            .shadow(color: Color.purple, radius: 5)
+                            .font(.title)
+                            .foregroundColor(.black)
+                            .frame(width: 120, height: 50)
+                            .background(Color.neonPurple)
+                            .cornerRadius(10)
                     }
                     
                     Button(action: resetTimer) {
                         Text("Reset")
-                            .font(.title2)
-                            .foregroundColor(Color.white)
-                            .padding()
-                            .background(Capsule().fill(Color.purple))
-                            .shadow(color: Color.purple, radius: 5)
+                            .font(.title)
+                            .foregroundColor(.black)
+                            .frame(width: 120, height: 50)
+                            .background(Color.neonPurple)
+                            .cornerRadius(10)
                     }
                 }
+                .padding(.bottom, 50)
+
+                // Activity Graph
+                ActivityGraph(data: activityData)
+                    .frame(height: 200)
+                    .padding()
                 
                 Spacer()
-                
-                ActivityGraph()
-                    .padding()
             }
         }
     }
-
+    
     func startTimer() {
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
-            if self.isTimerRunning {
-                self.timerValue += 1
-            } else {
-                timer.invalidate()
+        isTimerRunning.toggle()
+        if isTimerRunning {
+            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                timerValue += 1
             }
+        } else {
+            timer?.invalidate()
         }
     }
-  
+    
     func resetTimer() {
-        isTimerRunning = false
+        timer?.invalidate()
         timerValue = 0
+        isTimerRunning = false
     }
 }
 
 struct ActivityGraph: View {
+    var data: [CGFloat]
+    
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Activity Graph")
-                .font(.title2)
-                .foregroundColor(Color.white)
+        GeometryReader { geometry in
+            let width = geometry.size.width / CGFloat(data.count)
+            let maxHeight = geometry.size.height
             
-            GeometryReader { geometry in
-                Path { path in
-                    let width = geometry.size.width
-                    let height = geometry.size.height
-                    
-                    path.move(to: CGPoint(x: 0, y: height * 0.7))
-                    path.addLine(to: CGPoint(x: width * 0.2, y: height * 0.5))
-                    path.addLine(to: CGPoint(x: width * 0.4, y: height * 0.8))
-                    path.addLine(to: CGPoint(x: width * 0.6, y: height * 0.4))
-                    path.addLine(to: CGPoint(x: width * 0.8, y: height * 0.6))
-                    path.addLine(to: CGPoint(x: width, y: height * 0.3))
+            HStack(alignment: .bottom) {
+                ForEach(data.indices) { index in
+                    Rectangle()
+                        .fill(LinearGradient(gradient: Gradient(colors: [.neonPurple, .black]), startPoint: .top, endPoint: .bottom))
+                        .frame(width: width, height: maxHeight * data[index])
+                        .cornerRadius(5)
                 }
-                .stroke(Color.purple, lineWidth: 3)
-                .shadow(color: Color.purple, radius: 5)
             }
-            .frame(height: 150)
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+extension Color {
+    static let neonPurple = Color(red: 148/255, green: 0, blue: 211/255)
+}
+
+#Preview {
+    ContentView()
 }
