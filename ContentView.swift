@@ -1,103 +1,98 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var timerValue: Int = 0
-    @State private var isTimerRunning: Bool = false
-    @State private var activityData: [CGFloat] = [0.2, 0.4, 0.6, 0.8, 0.5, 0.7, 0.3]
-    @State private var timer: Timer? = nil
-
+    @State private var timerRunning = false
+    @State private var timeRemaining = 30
+    
+    let neonPurple = Color(red: 138/255, green: 43/255, blue: 226/255)
+    let darkBackground = Color.black
+    
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(gradient: Gradient(colors: [Color.black, Color.purple]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+            darkBackground.edgesIgnoringSafeArea(.all)
             
-            VStack {
-                Text("Aura Fitness")
-                    .font(.largeTitle)
-                    .foregroundColor(.neonPurple)
-                    .padding(.top, 50)
+            VStack(spacing: 40) {
+                VStack {
+                    Text("Fitness Aura")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(neonPurple)
+                    
+                    Text("Future of Fitness Tracking")
+                        .foregroundColor(neonPurple.opacity(0.7))
+                }
                 
                 Spacer()
                 
-                // Timer
-                Text("\(timerValue)")
-                    .font(.system(size: 80, weight: .bold))
-                    .foregroundColor(.neonPurple)
+                ZStack {
+                    Circle()
+                        .stroke(lineWidth: 15)
+                        .fill(neonPurple.opacity(0.3))
+                        .frame(width: 200, height: 200)
+                    
+                    Text("\(timeRemaining)s")
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundColor(neonPurple)
+                        .onAppear {
+                            timerRunning = true
+                            startTimer()
+                        }
+                }
                 
-                HStack(spacing: 30) {
-                    Button(action: startTimer) {
-                        Text(isTimerRunning ? "Pause" : "Start")
-                            .font(.title)
-                            .foregroundColor(.black)
-                            .frame(width: 120, height: 50)
-                            .background(Color.neonPurple)
-                            .cornerRadius(10)
+                Spacer()
+                
+                VStack {
+                    HStack {
+                        Text("Activity")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(neonPurple)
+                        
+                        Spacer()
                     }
                     
-                    Button(action: resetTimer) {
-                        Text("Reset")
-                            .font(.title)
-                            .foregroundColor(.black)
-                            .frame(width: 120, height: 50)
-                            .background(Color.neonPurple)
-                            .cornerRadius(10)
+                    HStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(
+                                LinearGradient(gradient: Gradient(colors: [neonPurple, .clear]), startPoint: .top, endPoint: .bottom)
+                            )
+                            .frame(width: 50, height: 150)
+                        
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(
+                                LinearGradient(gradient: Gradient(colors: [neonPurple, .clear]), startPoint: .top, endPoint: .bottom)
+                            )
+                            .frame(width: 50, height: 100)
+                        
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(
+                                LinearGradient(gradient: Gradient(colors: [neonPurple, .clear]), startPoint: .top, endPoint: .bottom)
+                            )
+                            .frame(width: 50, height: 130)
+                        
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(
+                                LinearGradient(gradient: Gradient(colors: [neonPurple, .clear]), startPoint: .top, endPoint: .bottom)
+                            )
+                            .frame(width: 50, height: 180)
                     }
                 }
-                .padding(.bottom, 50)
-
-                // Activity Graph
-                ActivityGraph(data: activityData)
-                    .frame(height: 200)
-                    .padding()
-                
-                Spacer()
+                .padding(.horizontal)
             }
+            .padding()
         }
     }
     
     func startTimer() {
-        isTimerRunning.toggle()
-        if isTimerRunning {
-            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-                timerValue += 1
-            }
-        } else {
-            timer?.invalidate()
-        }
-    }
-    
-    func resetTimer() {
-        timer?.invalidate()
-        timerValue = 0
-        isTimerRunning = false
-    }
-}
-
-struct ActivityGraph: View {
-    var data: [CGFloat]
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width / CGFloat(data.count)
-            let maxHeight = geometry.size.height
-            
-            HStack(alignment: .bottom) {
-                ForEach(data.indices) { index in
-                    Rectangle()
-                        .fill(LinearGradient(gradient: Gradient(colors: [.neonPurple, .black]), startPoint: .top, endPoint: .bottom))
-                        .frame(width: width, height: maxHeight * data[index])
-                        .cornerRadius(5)
+        if timerRunning {
+            Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+                if timeRemaining > 0 {
+                    timeRemaining -= 1
+                } else {
+                    timer.invalidate()
+                    timerRunning = false
                 }
             }
         }
     }
-}
-
-extension Color {
-    static let neonPurple = Color(red: 148/255, green: 0, blue: 211/255)
-}
-
-#Preview {
-    ContentView()
 }
